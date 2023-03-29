@@ -1,5 +1,7 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, act } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import SignUpPage from './SignUpPage';
+import axios from 'axios';
 
 describe('Sign Up Page', () => {
     describe('Layout', () => {
@@ -17,6 +19,91 @@ describe('Sign Up Page', () => {
             render(<SignUpPage />);
             const input = screen.getByLabelText('Email');
             expect(input).toBeInTheDocument();
+        })
+        it("has email type for email input", () => {
+            render(<SignUpPage />);
+            const input = screen.getByLabelText('Email');
+            
+            expect(input.type).toBe("email");
+        })
+        it("has password input", () => {
+            render(<SignUpPage />);
+            const input = screen.getByLabelText('Password');
+            expect(input).toBeInTheDocument();
+        })
+        it("has password type for password input", () => {
+            render(<SignUpPage />);
+            const input = screen.getByLabelText('Password');
+            
+            expect(input.type).toBe("password");
+        })
+        it("has password repeat input", () => {
+            render(<SignUpPage />);
+            const input = screen.getByLabelText('Password Repeat');
+            expect(input).toBeInTheDocument();
+        })
+        it("has password type for password repeat input", () => {
+            render(<SignUpPage />);
+            const input = screen.getByLabelText('Password Repeat');
+
+            expect(input.type).toBe("password");
+        })
+        it("has Sign Up button", () => {
+            render(<SignUpPage />);
+            const button = screen.queryByRole("button", { name: "Sign Up" });
+            expect(button).toBeInTheDocument();
+        })
+        it("disables the button initially", () => {
+            render(<SignUpPage />);
+            const button = screen.queryByRole("button", { name: "Sign Up" });
+            expect(button).toBeDisabled();
+        })
+    })
+    describe("Interactions", () => {
+        it("enables the button when password and password repeat fields have same value", async () => {
+            render(<SignUpPage />);
+            const passwordInput = screen.getByLabelText('Password');
+            const passwordRepeatInput = screen.getByLabelText('Password Repeat');
+            
+            // eslint-disable-next-line testing-library/no-unnecessary-act
+            act(() => {
+                userEvent.type(passwordInput, "P4ssword");
+                userEvent.type(passwordRepeatInput, "P4ssword");
+            });
+
+            const button = screen.queryByRole("button", { name: "Sign Up" });
+            expect(button).toBeEnabled();
+        })
+        it("sends username, email and password to backend after clicking the button", async () => {
+            render(<SignUpPage />);
+            const usernameInput = screen.getByLabelText('Username');
+            const emailInput = screen.getByLabelText('Email');
+            const passwordInput = screen.getByLabelText('Password');
+            const passwordRepeatInput = screen.getByLabelText('Password Repeat');
+            
+            // eslint-disable-next-line testing-library/no-unnecessary-act
+            act(() => {
+                userEvent.type(usernameInput, "user1");
+                userEvent.type(emailInput, "user1@mail.com");
+                userEvent.type(passwordInput, "P4ssword");
+                userEvent.type(passwordRepeatInput, "P4ssword");
+            });
+
+            const button = screen.queryByRole("button", { name: "Sign Up" });
+
+            const mockFn = jest.fn();
+            axios.post = mockFn;
+
+            userEvent.click(button);
+
+            const firstCallOfMockFunction = mockFn.mock.calls[0];
+            const body = firstCallOfMockFunction[1];
+
+            expect(body).toEqual({
+                username: "user1",
+                email: "user1@mail.com",
+                password: "P4ssword"
+            })
         })
     })
 })
