@@ -43,5 +43,6 @@
     "moduleNameMapper": {
       "axios": "axios/dist/node/axios.cjs"
     }
-  }
+  },
+  "proxy": "http://localhost:8080"
 }

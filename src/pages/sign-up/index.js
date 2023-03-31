@@ -31,7 +31,7 @@ const Container = () => {
       password,
     };
 
-    axios.post("api/1.0/users", body);
+    axios.post("/api/1.0/users", body);
     // fetch("api/1.0/users", {
     //   method: 'POST',
     //   headers: {
