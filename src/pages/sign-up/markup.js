@@ -1,49 +1,9 @@
-import axios from "axios";
-import { useEffect, useState } from "react";
-
-const SignUpPage = () => {
-  const [data, setData] = useState({
-    username: '',
-    email: '',
-    password: '',
-    passwordRepeat: ''
-  });
-  
-  const [disabled, setDisabled] = useState(true);
-
-  const onChange = (event) => {
-    const { id, value } = event.target;
-
-    setData(prev => ({
-        ...prev,
-        [id]: value
-    }))
-  }
-
-  const submit = (event) => {
-    event.preventDefault();
-    const { username, email, password } = data;
-
-    const body = {
-      username,
-      email,
-      password,
-    };
-
-    axios.post("api/1.0/users", body);
-  };
-
-  useEffect(() => {
-    if (!data.password && !data.passwordRepeat) {
-        setDisabled(true);
-    } else {
-        if (data.password === data.passwordRepeat) {
-            setDisabled(false);
-        } else {
-            setDisabled(true);
-        }
-    }
-  }, [data.password, data.passwordRepeat]);
+const Markup = ({
+    submit,
+    onChange,
+    data,
+    disabled,
+}) => {
 
   return (
     <>
@@ -98,4 +58,4 @@ const SignUpPage = () => {
   );
 };
 
-export default SignUpPage;
+export default Markup;
